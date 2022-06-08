@@ -1,20 +1,21 @@
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dialogflow/dialogflow_v2.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
-import 'dart:developer';
 
 const rasaIP = '0.0.0.0:5005';
 const localIP = 'localhost';
 const IP = localIP;
+const CHANNEL = "edu.upc.gessi.broadcast.CHANNEL";
 
 void main() {
   runApp(MaterialApp(
     home: MyApp(),
     debugShowCheckedModeBanner: false,
   ));
+
 }
 
 class MyApp extends StatefulWidget {
@@ -26,6 +27,25 @@ class _MyAppState extends State<MyApp> {
 
   final messageInsert = TextEditingController();
   List<Map> messsages = List();
+
+  /**
+   * Build channel to register broadcasts
+   */
+  static const platform = MethodChannel(CHANNEL);
+
+  Future<void> _registerBroadcasts() async {
+    String check;
+    try {
+      check = await platform.invokeMethod('registerBroadcasts');
+    } on PlatformException catch (e) {
+      check = '-1';
+      //TODO
+    }
+  }
+  /**
+   * End of broadcast register
+   */
+
 
   Future<String> sendToRasa (String text) async {
     print("started send to rasa");
@@ -52,6 +72,10 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+
+    //Register broadcasts when building the app
+    _registerBroadcasts();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(

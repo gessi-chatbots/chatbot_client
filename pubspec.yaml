@@ -30,6 +30,9 @@ dependencies:
   cupertino_icons: ^0.1.3
   flutter_dialogflow: ^0.1.3
   bubble: ^1.1.9+1
+  fbroadcast: ^1.1.1
+  fluttertoast: ^8.0.9
+  logger: 1.1.0
 
 dev_dependencies:
   flutter_test:
