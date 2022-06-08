@@ -10,8 +10,10 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity: FlutterActivity() {
 
     private val CHANNEL = "edu.upc.gessi.broadcast.CHANNEL"
-    private val BROADCAST = "edu.upc.gessi.broadcast.TEST_BROADCAST"
-    private val BROADCAST_INTENT = "edu.upc.gessi.broadcast.TEST_BROADCAST.intent"
+
+    private val BROADCAST_COMMUNICATION = "edu.upc.gessi.broadcast";
+
+    private val PLAN_ROUTE = "edu.upc.gessi.broadcast.OSMAND.PLAN_ROUTE";
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -29,8 +31,9 @@ class MainActivity: FlutterActivity() {
     private fun registerBroadcasts(): Int {
         val br: BroadcastReceiver = MyBroadcastReceiver()
 
-        val filter = IntentFilter(BROADCAST).apply {
-            addAction(BROADCAST_INTENT)
+        val filter = IntentFilter(BROADCAST_COMMUNICATION).apply {
+            addAction(PLAN_ROUTE);
+            //TODO add new listeners from source apps
         }
         registerReceiver(br, filter)
 
