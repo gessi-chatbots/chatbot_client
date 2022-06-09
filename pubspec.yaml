@@ -1,5 +1,5 @@
-name: chatbot_dialogflow
-description: A new Flutter project.
+name: mobile_catalogue_chatbot
+description: A Flutter project for the design/integration of a chatbot for integrating features in mobile applications
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.

@@ -96,7 +96,7 @@ class _MyAppState extends State<MyApp> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "CupcakeShop Bot",
+          "Mobile Catalogue Chatbot",
         ),
         backgroundColor: Colors.deepOrange,
       ),
