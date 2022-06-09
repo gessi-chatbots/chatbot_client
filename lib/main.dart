@@ -1,20 +1,23 @@
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dialogflow/dialogflow_v2.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
-import 'dart:developer';
 
 const rasaIP = '0.0.0.0:5005';
 const localIP = 'localhost';
 const IP = localIP;
+const CHANNEL = "edu.upc.gessi.broadcast.CHANNEL";
+const REVERSE_CHANNEL = "edu.upc.gessi.broadcast.REVERSE_CHANNEL";
+
 
 void main() {
   runApp(MaterialApp(
     home: MyApp(),
     debugShowCheckedModeBanner: false,
   ));
+
 }
 
 class MyApp extends StatefulWidget {
@@ -26,6 +29,43 @@ class _MyAppState extends State<MyApp> {
 
   final messageInsert = TextEditingController();
   List<Map> messsages = List();
+
+  /**
+   * Build channel to register broadcasts
+   */
+  static const platform = MethodChannel(CHANNEL);
+  static const reversePlatform = MethodChannel(REVERSE_CHANNEL);
+
+
+  Future<void> _registerBroadcasts() async {
+    try {
+      await platform.invokeMethod('registerBroadcasts');
+    } on PlatformException catch (e) {
+      print(e);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    //Register broadcasts when building the app
+    _registerBroadcasts();
+
+    MethodChannel(REVERSE_CHANNEL).setMethodCallHandler((call) async {
+      if (call.method == "fromPlanRouteToCreateEvent") {
+
+        //TODO trigger RASA communication
+        print("TODO:\t Trigger RASA communication. Still to be done... :-)");
+
+      }
+      return null;
+    });
+  }
+
+  /**
+   * End of broadcast register
+   */
+
 
   Future<String> sendToRasa (String text) async {
     print("started send to rasa");
@@ -52,10 +92,11 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "CupcakeShop Bot",
+          "Mobile Catalogue Chatbot",
         ),
         backgroundColor: Colors.deepOrange,
       ),
