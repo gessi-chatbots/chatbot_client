@@ -2,15 +2,19 @@ import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:mobile_catalogue_chatbot/serializable/IntegrationPayload.dart';
 import 'dart:convert';
 import 'dart:async';
+
+import 'package:mobile_catalogue_chatbot/serializable/SourcePlanRoute.dart';
+import 'package:mobile_catalogue_chatbot/serializable/TargetDataItem.dart';
+import 'package:mobile_catalogue_chatbot/serializable/target_data/CreateEvent.dart';
 
 const rasaIP = '0.0.0.0:5005';
 const localIP = 'localhost';
 const IP = localIP;
 const CHANNEL = "edu.upc.gessi.broadcast.CHANNEL";
 const REVERSE_CHANNEL = "edu.upc.gessi.broadcast.REVERSE_CHANNEL";
-
 
 void main() {
   runApp(MaterialApp(
@@ -36,10 +40,17 @@ class _MyAppState extends State<MyApp> {
   static const platform = MethodChannel(CHANNEL);
   static const reversePlatform = MethodChannel(REVERSE_CHANNEL);
 
-
   Future<void> _registerBroadcasts() async {
     try {
       await platform.invokeMethod('registerBroadcasts');
+    } on PlatformException catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _sendBroadcast(parameters) async {
+    try {
+      await platform.invokeMethod('sendBroadcastIntent', parameters);
     } on PlatformException catch (e) {
       print(e);
     }
@@ -51,15 +62,48 @@ class _MyAppState extends State<MyApp> {
     //Register broadcasts when building the app
     _registerBroadcasts();
 
-    MethodChannel(REVERSE_CHANNEL).setMethodCallHandler((call) async {
-      if (call.method == "fromPlanRouteToCreateEvent") {
+    reversePlatform.setMethodCallHandler((call) async {
+      try {
+        if (call.method == "fromPlanRouteToCreateEvent") {
+          //TODO trigger RASA communication
+          print("TODO:\t Trigger RASA communication. Still to be done... :-)");
 
-        //TODO trigger RASA communication
-        print("TODO:\t Trigger RASA communication. Still to be done... :-)");
-
+          //TODO sendBroadcastIntent
+          IntegrationPayload integrationPayload = createEventIntegrationPayload(
+              call.arguments);
+          sendBroadcastIntent(integrationPayload);
+        }
+        return null;
+      } on Exception catch (e) {
+        print(e);
       }
-      return null;
     });
+  }
+  
+  IntegrationPayload createEventIntegrationPayload(arguments) {
+    var name = arguments['name'];
+    var lat = arguments['latitude'];
+    var long = arguments['longitude'];
+
+    //Source data
+    SourcePlanRoute sourcePlanRoute = SourcePlanRoute(lat, long);
+
+    //Target data
+    CreateEvent createEvent = CreateEvent("1654768958737", "1654769964679", "quim.motger@gmail.com", "Name", "Description");
+
+    //Integration payload
+    IntegrationPayload integrationPayload = IntegrationPayload("GPS-track-create", "CA-events-create", sourcePlanRoute, createEvent);
+
+    return integrationPayload;
+  }
+
+  void sendBroadcastIntent(integrationPayload) {
+    Map<String, dynamic> list = {"start_date_time": integrationPayload.targetData.targetDataList[0].value,
+      "end_date_time": integrationPayload.targetData.targetDataList[1].value,
+      "invites": integrationPayload.targetData.targetDataList[2].value,
+      "name": integrationPayload.targetData.targetDataList[3].value,
+      "description": integrationPayload.targetData.targetDataList[4].value};
+    _sendBroadcast(list);
   }
 
   /**
