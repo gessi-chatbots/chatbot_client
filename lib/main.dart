@@ -89,7 +89,7 @@ class _MyAppState extends State<MyApp> {
     SourcePlanRoute sourcePlanRoute = SourcePlanRoute(lat, long);
 
     //Target data
-    CreateEvent createEvent = CreateEvent("1654768958737", "1654769964679", "quim.motger@gmail.com", "Name", "Description");
+    CreateEvent createEvent = CreateEvent("1654848000000", "1654855200000", "quim.motger@gmail.com", "Name", "Description");
 
     //Integration payload
     IntegrationPayload integrationPayload = IntegrationPayload("GPS-track-create", "CA-events-create", sourcePlanRoute, createEvent);
@@ -102,7 +102,9 @@ class _MyAppState extends State<MyApp> {
       "end_date_time": integrationPayload.targetData.targetDataList[1].value,
       "invites": integrationPayload.targetData.targetDataList[2].value,
       "name": integrationPayload.targetData.targetDataList[3].value,
-      "description": integrationPayload.targetData.targetDataList[4].value};
+      "description": integrationPayload.targetData.targetDataList[4].value,
+      "latitude": integrationPayload.sourceData.lat,
+      "longitude": integrationPayload.sourceData.long};
     _sendBroadcast(list);
   }
 

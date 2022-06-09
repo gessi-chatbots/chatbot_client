@@ -60,6 +60,8 @@ class MainActivity: FlutterActivity() {
         Log.d(TAG, "Invites: " + argument["invites"])
         Log.d(TAG, "Start date/time: " + argument["start_date_time"])
         Log.d(TAG, "End date/time: " + argument["end_date_time"])
+        Log.d(TAG, "Latitude: " + argument["latitude"])
+        Log.d(TAG, "Longitude: " + argument["longitude"])
 
         Intent().also { intent ->
             intent.action = CREATE_EVENT
@@ -68,6 +70,8 @@ class MainActivity: FlutterActivity() {
             intent.putExtra("invites", argument["invites"])
             intent.putExtra("start_date_time", argument["start_date_time"])
             intent.putExtra("end_date_time", argument["end_date_time"])
+            intent.putExtra("latitude", argument["latitude"])
+            intent.putExtra("longitude", argument["longitude"])
             sendBroadcast(intent)
         }
 
