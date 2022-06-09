@@ -1,6 +1,7 @@
 package com.example.chatbot_dialogflow
 
 import android.content.BroadcastReceiver
+import android.content.Intent
 import android.content.IntentFilter
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
@@ -18,11 +19,16 @@ class MainActivity: FlutterActivity() {
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
+        flutterContext = flutterEngine
+
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
             call, result ->
 
             if (call.method == "registerBroadcasts") {
+
+                //Register Broadcasts
                 registerBroadcasts()
+
             }
 
         }
@@ -40,5 +46,18 @@ class MainActivity: FlutterActivity() {
         return 1
     }
 
+    companion object {
+        private val REVERSE_CHANNEL = "edu.upc.gessi.broadcast.REVERSE_CHANNEL";
+        private lateinit var flutterContext : FlutterEngine
+
+        fun fromPlanRouteToCreateEvent(name: String, latitude: String, longitude: String) {
+            MethodChannel(flutterContext.dartExecutor.binaryMessenger, REVERSE_CHANNEL)
+                    .invokeMethod("fromPlanRouteToCreateEvent",
+                            mapOf("name" to name,
+                            "latitude" to latitude,
+                            "longitude" to longitude))
+        }
+
+    }
 
 }

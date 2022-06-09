@@ -9,6 +9,8 @@ const rasaIP = '0.0.0.0:5005';
 const localIP = 'localhost';
 const IP = localIP;
 const CHANNEL = "edu.upc.gessi.broadcast.CHANNEL";
+const REVERSE_CHANNEL = "edu.upc.gessi.broadcast.REVERSE_CHANNEL";
+
 
 void main() {
   runApp(MaterialApp(
@@ -32,16 +34,34 @@ class _MyAppState extends State<MyApp> {
    * Build channel to register broadcasts
    */
   static const platform = MethodChannel(CHANNEL);
+  static const reversePlatform = MethodChannel(REVERSE_CHANNEL);
+
 
   Future<void> _registerBroadcasts() async {
-    String check;
     try {
-      check = await platform.invokeMethod('registerBroadcasts');
+      await platform.invokeMethod('registerBroadcasts');
     } on PlatformException catch (e) {
-      check = '-1';
-      //TODO
+      print(e);
     }
   }
+
+  @override
+  void initState() {
+    super.initState();
+    //Register broadcasts when building the app
+    _registerBroadcasts();
+
+    MethodChannel(REVERSE_CHANNEL).setMethodCallHandler((call) async {
+      if (call.method == "fromPlanRouteToCreateEvent") {
+
+        //TODO trigger RASA communication
+        print("TODO:\t Trigger RASA communication. Still to be done... :-)");
+
+      }
+      return null;
+    });
+  }
+
   /**
    * End of broadcast register
    */
@@ -72,9 +92,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-
-    //Register broadcasts when building the app
-    _registerBroadcasts();
 
     return Scaffold(
       appBar: AppBar(

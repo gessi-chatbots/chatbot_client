@@ -22,10 +22,18 @@ class MyBroadcastReceiver : BroadcastReceiver() {
         //TODO: maybe at some point https://developer.android.com/guide/components/broadcasts#context-registered-receivers
 
         if (intent.action.equals(PLAN_ROUTE)) {
+
+            val name = intent.getStringExtra(PLAN_ROUTE_NAME);
+            val latitude = intent.getDoubleExtra(PLAN_ROUTE_LATITUDE, 0.0).toString();
+            val longitude = intent.getDoubleExtra(PLAN_ROUTE_LONGITUDE, 0.0).toString();
+
             Log.d(TAG, "Hello! We did it! "+ intent.action)
-            Log.d(TAG, "Name: " + intent.getStringExtra("name"))
-            Log.d(TAG, "Latitude: " + intent.getDoubleExtra("init_lat", 0.0).toString())
-            Log.d(TAG, "Longitude:" + intent.getDoubleExtra("init_long", 0.0).toString())
+            Log.d(TAG, "Name: $name")
+            Log.d(TAG, "Latitude: $latitude")
+            Log.d(TAG, "Longitude: $longitude")
+
+            MainActivity.fromPlanRouteToCreateEvent(name, latitude, longitude)
+
         } else  {
             Log.d(TAG, "Oh, something went wrong: " + intent.action);
         }
