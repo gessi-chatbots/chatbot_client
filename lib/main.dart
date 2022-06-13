@@ -49,14 +49,16 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     //Register broadcasts when building the app
-    _registerBroadcasts();
+    //_registerBroadcasts();
+
+        //print("TODO:\t Trigger RASA communication. Still to be done... :-)");
+
+        sendToRasaGivenIntent("create_event");
 
     MethodChannel(REVERSE_CHANNEL).setMethodCallHandler((call) async {
       if (call.method == "fromPlanRouteToCreateEvent") {
 
         //TODO trigger RASA communication
-        print("TODO:\t Trigger RASA communication. Still to be done... :-)");
-
       }
       return null;
     });
@@ -65,6 +67,35 @@ class _MyAppState extends State<MyApp> {
   /**
    * End of broadcast register
    */
+
+  Future<String> sendToRasaGivenIntent (String intent) async {
+    print("started send to rasa");
+    var payload = {"name": intent};
+
+    try {
+      dynamic response = await http.post(
+          Uri.parse('http://' + IP + ':5005' + '/conversations/test/trigger_intent?output_channel=latest'),
+          headers: {"Content-Type": "application/json"},
+          body: json.encode(payload)
+        ).timeout(const Duration(seconds: 10)
+      );
+      Map<String, dynamic> r = Map.castFrom(json.decode(response.body));
+      List<dynamic> events = r["tracker"]["events"];
+      var text = "";
+      for (var m in events) {
+        if (m["text"] != null && !m["text"].contains("EXTERNAL")) text = m["text"];
+      }
+      print(text);
+
+      setState(() {
+        messsages.insert(0,
+            {"data": 0, "message": text});
+      });
+      //print('Request with statusCode : and body: ${response.body}');
+      
+    } on TimeoutException catch (e) {}
+    return "error";
+  }
 
 
   Future<String> sendToRasa (String text) async {
